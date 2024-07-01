@@ -51,19 +51,24 @@ docker build -t <nombre imagen>:<version> .
 
  
 ### Ejecutar el archivo Dockerfile y construir una imagen en la versión 1.0
-_Puedes copiar y ejecutar directamente. No olvides verificar en qué directorio se encuentra el archivo Dockerfile
-```
+_Puedes copiar y ejecutar directamente. No olvides verificar en qué directorio se encuentra el archivo Dockerfile_
 
+```
+docker build -t practica4e5:1.0 .
 ```
 
 **¿Cuántos pasos se han ejecutado?**
-# RESPONDER 
+
+Se ejecutaron 11 pasos en el proceso de construcción de la imagen, como se muestra en tu salida de Docker en la terminal. Cada paso representa una etapa del proceso de construcción definido por el Dockerfile.
 
 ### Inspeccionar la imagen creada
-# COMPLETAR CON UNA CAPTURA
+![Inspeccion de Imagen Apache](imagenes/dockerfileInspectApache1.png)
 
 **Modificar el archivo index.html para incluir su nombre**
 **¿Cuántos pasos se han ejecutado? ¿Observa algo diferente en la creación de la imagen**
+
+En esta ocacion se ejecutaron 10 pasos, Docker reconoce que las capas del Dockerfile que no han cambiado desde la construcción anterior no necesitan ser reconstruidas, el tiempo de construcción de la imagen fue significativamente menor, ya que Docker no repite pasos como la actualización del sistema operativo o la instalación de paquetes si estos pasos no se han modificado.
+La única capa que se ejecutó nuevamente es la que copia los archivos desde el host (index.html).
 
 ## Mecanismo de caché
 Docker usa un mecanismo de caché cuando crea imágenes para acelerar el proceso de construcción y evitar la repetición de pasos que no han cambiado. Cada instrucción en un Dockerfile crea una capa en la imagen final. Docker intenta reutilizar las capas de una construcción anterior si no han cambiado, lo que reduce significativamente el tiempo de construcción.
@@ -75,14 +80,24 @@ Docker usa un mecanismo de caché cuando crea imágenes para acelerar el proceso
 
 ### Crear un contenedor a partir de las imagen creada, mapear todos los puertos
 ```
-
+docker run -d -P --name contenedorp4e5 practica4e5:1.1
 ```
 
 ### ¿Con que puerto host se está realizando el mapeo?
-# COMPLETAR CON LA RESPUESTA
+
+Verificando los puertos mapeados
+
+```
+docker port contenedorp4e5
+```
+
+Dando como resultado: `80/tcp -> 0.0.0.0:32768` <br>
+Indicando que el puerto del host al que se está realizando el mapeo del puerto `80/tcp` del contenedor `contenedorp4e5` es el puerto `32768`.
 
 **¿Qué es una imagen huérfana?**
-# COMPLETAR CON LA RESPUESTA
+
+Una imagen huérfana en Docker es aquella que ha sido creada pero no tiene ningún contenedor en ejecución que la esté utilizando. Esto puede suceder cuando se elimina el contenedor que estaba basado en esa imagen sin eliminar la imagen en sí misma. <br>
+Las imágenes huérfanas ocupan espacio en el sistema de archivos Docker pero no están activamente vinculadas a ninguna instancia de contenedor, lo que puede conducir a la acumulación innecesaria de almacenamiento si no se gestionan adecuadamente. 
 
 ### Identificar imágenes huérfanas
 ```
@@ -90,17 +105,20 @@ docker images -f "dangling=true"
 ```
 
 ### Listar los IDS de las imágenes huérfanas
+
 ```
 docker images -f "dangling=true" -q
 ```
 
 ### Eliminar imágenes huérfanas
+
 Este comando eliminará todas las imágenes que no estén asociadas a ningún contenedor en ejecución. Antes de ejecutarlo, asegúrate de revisar las imágenes que serán eliminadas para evitar la pérdida de imágenes importantes. 
 ```
 docker image prune
 ```
 
 ### Para Ejecutar un archivo Dockerfile que tiene otro nombre
+
 ```
 docker build -t <nombre imagen>:<version> -f <ruta y nombre del Dockerfile> .
 ```
